@@ -1,6 +1,5 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
-import { connect } from 'node:http2';
 
 const app = express();
 const PORT = 3000;
@@ -44,7 +43,7 @@ app.post('/salvar/agendamento', async (req, res) => {
         const mensagem = `Olá ${nome}, seu agendamento para o dia ${dia} às ${hora} foi salvo com sucesso!`;
 
         res.status(200).send({ message: mensagem });
-        
+
     } 
     //catch para erros
     catch (err) {
