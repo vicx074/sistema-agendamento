@@ -1,0 +1,12 @@
+CREATE DATABASE agendamento;
+
+USE agendamento;
+
+CREATE TABLE clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    dia DATE NOT NULL,
+    hora TIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
