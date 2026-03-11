@@ -1,58 +1,71 @@
-import express from 'express';
-import mysql from 'mysql2/promise';
+async function salvarAgendamento(payload) {
+  const resposta = await fetch('/salvar-agendamento', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
 
-const app = express();
-const PORT = 3000;
-
-//config do mysql
-
-const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '123456',
-    database: 'agendamento'
-};
-
-// config do express/node
-app.use(express.json());
-app.use(express.static('public'));
+  return await resposta.json();
+}
 
 
-//rota para lidar com um novo agendamento
-app.post('/salvar/agendamento', async (req, res) => {
+// função para buscar os agendamentos do servidor
+async function buscarAgendamentos() {
+  const resposta = await fetch('/agendamentos');
+  return await resposta.json();
+}
 
-    //conexão com mysql
-    let connection;
-    try {
-        
-        connection = await mysql.createConnection(dbConfig);
-        console.log('Conectado ao banco de dados MySQL');
+function renderizarAgendamentos(lista) {
+  const ul = document.getElementById('lista-agendamentos');
+  ul.innerHTML = '';
 
-        const insertQuery= !`
-        
-            INSERT INTO agendamentos (nome, telefone, dia, hora)
-            VALUES (?, ?, ?, ?);
-        `;
-
-        //variavel de result do banco
-        const [result] = await connection.execute(insertQuery, [nome, telefone, dia, hora]);
+  if (!lista.length) {
+    ul.innerHTML = '<li>Nenhum agendamento cadastrado.</li>';
+    return;
+  }
 
 
-        console.log(`Agendamento salvo com sucesso, ID: ${result.insertId}`);
+  // renderiza cada agendamento na lista
+  lista.forEach(function (agendamento) {
+    const li = document.createElement('li');
+    li.textContent = agendamento.nome + ' - ' + agendamento.telefone + ' - ' + agendamento.dia + ' às ' + agendamento.hora;
+    ul.appendChild(li);
+  });
+}
 
-        const mensagem = `Olá ${nome}, seu agendamento para o dia ${dia} às ${hora} foi salvo com sucesso!`;
+  // função para carregar os agendamentos ao abrir a página
+async function carregarAgendamentos() {
+  try {
+    const lista = await buscarAgendamentos();
+    renderizarAgendamentos(lista);
+  } catch (error) {
+    mensagem.textContent = 'Erro ao carregar agendamentos.';
+  }
+}
 
-        res.status(200).send({ message: mensagem });
+const form = document.getElementById('form-agendamento');
+const mensagem = document.getElementById('mensagem');
 
-    } 
-    //catch para erros
-    catch (err) {
-        console.error('Erro ao processar agendamento:', err);
+form.addEventListener('submit', async function (event) {
+  event.preventDefault();
 
-        res.status(500).send({ message: 'Erro interno ao salvar agendamento' });
-    }finally {
-        if (connection) {
-            await connection.end();
-        }   
-    }
-})
+  const payload = {
+    nome: document.getElementById('nome').value,
+    telefone: document.getElementById('telefone').value,
+    dia: document.getElementById('dia').value,
+    hora: document.getElementById('hora').value
+  };
+
+  try {
+    const resultado = await salvarAgendamento(payload);
+    mensagem.textContent = resultado.message || 'Agendamento salvo com sucesso.';
+    form.reset();
+    await carregarAgendamentos();
+  } catch (error) {
+    mensagem.textContent = 'Erro ao salvar agendamento.';
+  }
+});
+
+carregarAgendamentos();
