@@ -4,7 +4,7 @@ body {
   background: #000;
   min-height: 100vh;
   padding: 32px 16px 48px;
-}s
+}
 
 .container {
   max-width: 420px;
@@ -70,7 +70,7 @@ button {
   margin-top: 15px;
   text-align: center;
   font-weight: bold;
-  color: #d8f3dc;
+  color: #000000;
 }
 
 #lista-agendamentos {
@@ -90,4 +90,19 @@ button {
   font-weight: 600;
   line-height: 1.5;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.botao-excluir {
+  background: #b00020;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 10px 12px;
+  border-radius: 10px;
+  flex-shrink: 0;
 }

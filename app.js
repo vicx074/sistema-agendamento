@@ -86,3 +86,37 @@ app.get('/agendamentos', async (req, res) => {
     });
   }
 });
+
+//rota para excluir agendamento
+app.delete('/agendamentos/:id', async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).send({
+      message: 'Informe o id do agendamento.'
+    });
+  }
+
+  try {
+    const { error } = await supabase
+      .from('agendamentos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Erro ao excluir agendamento:', error);
+      return res.status(500).send({
+        message: 'Erro ao excluir agendamento'
+      });
+    }
+
+    res.status(200).send({
+      message: 'Agendamento excluido com sucesso.'
+    });
+  } catch (err) {
+    console.error('Erro ao processar exclusão:', err);
+    res.status(500).send({
+      message: 'Erro ao excluir agendamento'
+    });
+  }
+});

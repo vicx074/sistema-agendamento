@@ -17,6 +17,14 @@ async function buscarAgendamentos() {
   return await resposta.json();
 }
 
+async function excluirAgendamento(id) {
+  const resposta = await fetch('/agendamentos/' + id, {
+    method: 'DELETE'
+  });
+
+  return await resposta.json();
+}
+
 function renderizarAgendamentos(lista) {
   const ul = document.getElementById('lista-agendamentos');
   ul.innerHTML = '';
@@ -26,11 +34,30 @@ function renderizarAgendamentos(lista) {
     return;
   }
 
-
   // renderiza cada agendamento na lista
   lista.forEach(function (agendamento) {
     const li = document.createElement('li');
-    li.textContent = agendamento.nome + ' - ' + agendamento.telefone + ' - ' + agendamento.dia + ' às ' + agendamento.hora;
+
+    const texto = document.createElement('span');
+    texto.textContent = agendamento.nome + ' - ' + agendamento.telefone + ' - ' + agendamento.dia + ' às ' + agendamento.hora;
+
+    const botao = document.createElement('button');
+    botao.type = 'button';
+    botao.textContent = 'Excluir';
+    botao.className = 'botao-excluir';
+
+    botao.addEventListener('click', async function () {
+      try {
+        const resultado = await excluirAgendamento(agendamento.id);
+        mensagem.textContent = resultado.message || 'Agendamento excluido com sucesso.';
+        await carregarAgendamentos();
+      } catch (error) {
+        mensagem.textContent = 'Erro ao excluir agendamento.';
+      }
+    });
+
+    li.appendChild(texto);
+    li.appendChild(botao);
     ul.appendChild(li);
   });
 }
